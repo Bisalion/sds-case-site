@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Knife Case SDS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            text-align: center;
+            color: #f0a500;
+            text-shadow: 0 0 10px rgba(240,165,0,0.5);
+            margin-bottom: 20px;
+        }
+        .btn {
+            width: 80%;
+            padding: 16px 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s, box-shadow 0.2s;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+            background: #f0a500;
+            color: #1a1a2e;
+        }
+        .btn-news {
+            background: #2c3e66;
+            color: white;
+        }
+        .btn:hover {
+            transform: scale(1.03);
+            filter: brightness(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+        .btn:active {
+            transform: scale(0.97);
+            transition: 0.05s;
+            background: #e09500;
+        }
+        footer {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚔️ SDS CASE 2026</h1>
+        <button class="btn" id="playBtn">🎮 ИГРАТЬ</button>
+        <button class="btn btn-news" id="newsBtn">📰 НОВОСТИ</button>
+    </div>
+    <footer>Knife Case SDS 2026 • Beta</footer>
+
+    <script>
+        document.getElementById('playBtn').addEventListener('click', () => {
+            window.location.href = 'game.html';
+        });
+        document.getElementById('newsBtn').addEventListener('click', () => {
+            window.location.href = 'news.html';
+        });
+    </script>
+</body>
+</html>

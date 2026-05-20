@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Новости и обновления</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0f0f1a;
+            font-family: 'Segoe UI', sans-serif;
+            color: #eee;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(20, 20, 40, 0.9);
+            border-radius: 32px;
+            padding: 30px 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: #f0a500;
+        }
+        .update-box, .about-box {
+            background: #1e1e2e;
+            border-left: 6px solid #f0a500;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 20px;
+        }
+        .update-title, .about-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .update-date { color: #aaa; font-size: 0.8rem; margin-bottom: 15px; }
+        .update-desc, .about-desc { line-height: 1.5; }
+        .back-btn {
+            display: inline-block;
+            background: #f0a500;
+            color: #1a1a2e;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-weight: bold;
+            margin-top: 25px;
+            text-align: center;
+            transition: 0.2s;
+            cursor: pointer;
+            width: fit-content;
+        }
+        .back-btn:active { transform: scale(0.98); }
+        footer { text-align: center; margin-top: 30px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📢 О приложении и новости</h1>
+
+        <!-- Сначала информация о приложении -->
+        <div class="about-box">
+            <div class="about-title">🔪 О приложении SDS Case 2026</div>
+            <div class="about-desc">
+                <strong>Knife Case SDS 2026</strong> – это симулятор открытия кейсов с ножами.
+                Собирайте редкие скины, улучшайте кликер, испытывайте удачу в мини‑играх.
+                Все предметы имеют свою редкость и цену. Продавайте их, чтобы открывать новые кейсы.
+                Игра создана вдохновением Supreme Duelist Stickman.
+                <br><br>
+                Разработчик: <strong>Bisalion</strong>.
+                Дата релиза Beta: 2 апреля 2026.
+                Версия сайта: 0.1 (веб‑порт).
+            </div>
+        </div>
+
+        <!-- Затем последнее обновление -->
+        <div class="update-box">
+            <div class="update-title">⚙️ Версия 0.2 Beta</div>
+            <div class="update-date">24 апреля 2026</div>
+            <div class="update-desc">
+                • Оптимизация инвентаря – теперь он работает гораздо быстрее.<br>
+                • Добавлен поиск предметов по кнопке «Найти».<br>
+                • Исправлены вылеты при открытии 5 рулеток.<br>
+                • Улучшена совместимость с новыми устройствами.<br>
+                • Изменена цветовая схема кнопок.
+            </div>
+        </div>
+
+        <!-- Планы на будущее -->
+        <div class="update-box">
+            <div class="update-title">🎉 Планы на следующее обновление</div>
+            <div class="update-date">Май 2026</div>
+            <div class="update-desc">
+                • Веб‑версия игры (вы её сейчас тестируете!).<br>
+                • Система ежедневных бонусов.<br>
+                • Новые кейсы и скины.<br>
+                • Таблица лидеров.
+            </div>
+        </div>
+
+        <div class="back-btn" id="backBtn">← На главную</div>
+        <footer>© 2026 Bisalion. All rights reserved.</footer>
+    </div>
+    <script>
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html> 

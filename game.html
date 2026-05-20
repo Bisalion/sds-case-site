@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Игра - SDS Case</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        body {
+            background: #0a0a15;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        /* Верхняя панель профиля */
+        .profile-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 60px;
+            width: fit-content;
+            margin-left: auto;
+            margin-bottom: 20px;
+        }
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2c3e66;
+            cursor: pointer;
+            border: 2px solid #f0a500;
+        }
+        .balance {
+            background: #1e1e2e;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #f0a500;
+        }
+        .login-btn {
+            background: #f0a500;
+            color: black;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .login-btn:active { transform: scale(0.96); }
+        .logout-btn {
+            background: #aa2e2e;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 20px;
+        }
+        .case-slot {
+            background: #1f1f2f;
+            width: 200px;
+            height: 200px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            box-shadow: 0 0 15px rgba(240,165,0,0.3);
+        }
+        .open-btn {
+            background: #f0a500;
+            border: none;
+            padding: 14px 40px;
+            font-size: 1.3rem;
+            border-radius: 60px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .back-btn {
+            background: #2c3e66;
+            color: white;
+            margin-top: 40px;
+            padding: 10px 25px;
+            border-radius: 40px;
+            cursor: pointer;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div id="profileArea">
+        <!-- динамически загружается авторизация/профиль -->
+    </div>
+    <div class="game-container">
+        <div class="case-slot">📦 КЕЙС</div>
+        <button class="open-btn" id="openCaseBtn">ОТКРЫТЬ (100$)</button>
+        <div id="message" style="margin-top: 20px; font-style: italic;">Нажмите "Открыть", чтобы получить предмет</div>
+        <div class="back-btn" id="backToMenu">← Главное меню</div>
+    </div>
+
+    <script>
+        // ---------- КОНФИГУРАЦИЯ FIREBASE (ЗАМЕНИТЕ НА ВАШУ) ----------
+        const firebaseConfig = {
+        apiKey: "AIzaSyA7bmld3vvJc4EAp-NLdBx6eoa51MfhT6U",
+        authDomain: "sdscase.firebaseapp.com",
+        projectId: "sdscase",
+        storageBucket: "sdscase.firebasestorage.app",
+        messagingSenderId: "817483233286",
+        appId: "1:817483233286:web:769c11487348af6c612b87",
+        measurementId: "G-WETQK3W2TC"
+        };
+        // -------------------------------------------------------------
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Элементы DOM
+        const profileArea = document.getElementById('profileArea');
+        const openBtn = document.getElementById('openCaseBtn');
+        const messageDiv = document.getElementById('message');
+        const backBtn = document.getElementById('backToMenu');
+
+        let currentUser = null;
+        let userBalance = 500;
+
+        function updateBalanceUI() {
+            const balanceSpan = document.querySelector('.balance');
+            if (balanceSpan) balanceSpan.innerText = userBalance + ' $';
+        }
+
+        async function saveBalanceToFirestore(uid, balance) {
+            if (!uid) return;
+            await db.collection('users').doc(uid).set({ balance: balance }, { merge: true });
+        }
+
+        async function loadBalanceFromFirestore(uid) {
+            if (!uid) return 500;
+            const doc = await db.collection('users').doc(uid).get();
+            if (doc.exists && doc.data().balance !== undefined) {
+                return doc.data().balance;
+            } else {
+                await db.collection('users').doc(uid).set({ balance: 500 }, { merge: true });
+                return 500;
+            }
+        }
+
+        async function renderProfile(user) {
+            if (!user) {
+                profileArea.innerHTML = `<div class="profile-bar"><button class="login-btn" id="googleLoginBtn">Войти через Google</button></div>`;
+                document.getElementById('googleLoginBtn')?.addEventListener('click', () => {
+                    const provider = new firebase.auth.GoogleAuthProvider();
+                    auth.signInWithPopup(provider);
+                });
+                return;
+            }
+            const photoURL = user.photoURL || 'https://via.placeholder.com/48';
+            userBalance = await loadBalanceFromFirestore(user.uid);
+            updateBalanceUI();
+            profileArea.innerHTML = `
+                <div class="profile-bar">
+                    <img src="${photoURL}" class="avatar" id="avatarImg" alt="avatar">
+                    <span class="balance">${userBalance} $</span>
+                    <button class="logout-btn" id="logoutBtn">Выйти</button>
+                </div>
+            `;
+            document.getElementById('avatarImg')?.addEventListener('click', () => {
+                window.location.href = 'profile.html';
+            });
+            document.getElementById('logoutBtn')?.addEventListener('click', () => {
+                auth.signOut();
+            });
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            currentUser = user;
+            await renderProfile(user);
+            if (user) {
+                openBtn.disabled = false;
+                messageDiv.innerText = 'Нажмите "Открыть", чтобы получить предмет';
+            } else {
+                openBtn.disabled = true;
+                messageDiv.innerText = 'Войдите через Google, чтобы играть и сохранять прогресс!';
+                userBalance = 500;
+            }
+        });
+
+        openBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                messageDiv.innerText = 'Сначала войдите в аккаунт!';
+                return;
+            }
+            const price = 100;
+            if (userBalance < price) {
+                messageDiv.innerText = 'Недостаточно денег!';
+                return;
+            }
+            userBalance -= price;
+            const items = ['🔪 Обычный нож', '⚔️ Редкий меч', '🗡️ Эпический клинок', '✨ Легендарный кинжал'];
+            const rand = Math.floor(Math.random() * items.length);
+            const reward = items[rand];
+            messageDiv.innerHTML = `Выпало: ${reward}! +0$ (демо)`;
+            updateBalanceUI();
+            await saveBalanceToFirestore(currentUser.uid, userBalance);
+        });
+
+        backBtn.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
